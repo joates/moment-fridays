@@ -38,6 +38,13 @@ module.exports = function(date, opts, cb) {
     start.add(7, 'days')
   }
 
+  // handle the case when no output exists
+  if (fridays.length < 1)
+    return cb(new Error('nothing found for ' +
+      _moment.format(opts.format) +
+      ', please try a different input date'))
+
+  // deliver the result
   cb(null, fridays)
 }
 
