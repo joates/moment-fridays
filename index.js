@@ -30,8 +30,12 @@ module.exports = function(date, opts, cb) {
 
   // calculate return value
   var fridays = []
-    , start = _moment.clone().startOf('month').day(5)
+    , start = _moment.clone().startOf('month')
     , end = date_is_now ? _moment : _moment.clone().endOf('month')
+
+  // 1st friday
+  if (start.day() > 5) { start.add(7, 'days') }
+  start.day(5)
 
   while(start < end) {
     fridays.push(start.format(opts.format))
