@@ -2,18 +2,11 @@ var Moment = require('moment')
 
 module.exports = function(date, opts, cb) {
 
-  var _moment = null
-    , date_is_now = false
+  var fridays = []
+    , _moment = null
+    , _is_now = false
 
-  // input validation
-  if (typeof opts === 'function') {
-    cb = opts
-    opts = null
-  }
-  if (!opts) opts = {}
-  opts.format = opts.format || 'YYYY-MM-DD'
-
-  // create a moment object and check that it is valid
+  // create a moment object
   if (date) {
     _moment = Moment(date)
     if (! _moment.isValid())
@@ -21,19 +14,26 @@ module.exports = function(date, opts, cb) {
   }
   else {
     _moment = Moment()
-    date_is_now = true
+    _is_now = true
   }
 
+  // input validation
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = null
+  }
+  if (!opts) opts = {}
+
   // validate optional settings
+  opts.format = opts.format || 'YYYY-MM-DD'
   if (_moment.format(opts.format) === 'Invalid date')
     return cb(new Error('unrecognized format: '+ opts.format.toString()))
 
-  // calculate return value
-  var fridays = []
-    , start = _moment.clone().startOf('month')
-    , end = date_is_now ? _moment : _moment.clone().endOf('month')
+  // define a range of dates
+  var start = _moment.clone().startOf('month')
+    , end = _is_now ? _moment : _moment.clone().endOf('month')
 
-  // 1st friday
+  // locate 1st friday
   if (start.day() > 5) { start.add(7, 'days') }
   start.day(5)
 
