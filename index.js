@@ -52,8 +52,8 @@ if (! module.parent) {
       '\nIf DATE is omitted the friday before the current date is used.'+
       '\n'+
       '\nOptions:'+
+      '\n  -f, --format=    a string describing the output format of dates'+
       '\n  -l, --limit=     count of how many previous fridays to display'+
-      '\n      --format=    a string describing the output format of dates'+
       '\n'+
       '\n      --help       display this help and exit'+
       '\n      --version    display version information and exit'+
@@ -63,22 +63,24 @@ if (! module.parent) {
     process.exit()
   }
 
-  var argv = require('minimist')(process.argv.slice(2))
-    , opts = {}
-
-  if (argv.l) opts.limit = parseInt(argv.l, 10)
-  if (argv.limit) opts.limit = parseInt(argv.limit, 10)
-  if (argv.format) opts.format = argv.format
-  if (argv.help) usage()
-  if (argv.version) {
+  function version() {
     console.log(require("./package.json").version)
     process.exit()
   }
 
-  main(argv._[0], opts, function(err, data) {
-    if (err) throw err
+  var _args = process.argv.slice(2)
+    , _opts = {string: 'f', alias: {f: 'format', l: 'limit'} }
+    , argv = require('minimist')(_args, _opts)
+    , date = argv._[0] || null
+    , opts = {}
 
-    //process.on('exit', function() { /*console.log('\n')*/ })
+  if (argv.format) opts.format = argv.format
+  if (argv.limit) opts.limit = parseInt(argv.limit, 10)
+  if (argv.help) usage()
+  if (argv.version) version()
+
+  main(date, opts, function(err, data) {
+    if (err) throw err
     process.stdout.on('error', process.exit)
     data.pipe(process.stdout)
   })
