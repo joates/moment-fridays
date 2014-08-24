@@ -33,7 +33,7 @@ var main = module.exports = function(date, opts, cb) {
 
   var format = opts.format || 'YYYY-MM-DD'
   if (_date.format(format) === 'Invalid date')
-    throw new Error('unrecognized format: '+ format)
+    cb(new Error('unrecognized format: '+ format))
 
   rs._read = function() {
     rs.push(_date.format(format) +'\n')
@@ -76,11 +76,10 @@ if (! module.parent) {
   }
 
   main(argv._[0], opts, function(err, data) {
-    if (err) console.error(err.message, err)
+    if (err) throw err
 
-    process.on('exit', function() { /*console.log('\n')*/ })
+    //process.on('exit', function() { /*console.log('\n')*/ })
     process.stdout.on('error', process.exit)
-
     data.pipe(process.stdout)
   })
 }

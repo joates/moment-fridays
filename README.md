@@ -30,7 +30,7 @@ fridays('2010-12-25', opts, function(err, data) {
 })
 ```
 
-or from the command line..
+_or from the command line.._
 ```javascript
 node index.js --format='dddd Do, MMM YYYY' -l5 '2008-02-29'
 
@@ -42,11 +42,15 @@ Friday 8th, Feb 2008
 Friday 1st, Feb 2008
 ```
 
+_its easy to get the previous four fridays:_
+```shell
+node index.js |head -n4
+```
+
 
 ### Documentation
 
 see the [Moment.js docs](http://momentjs.com/docs/#/displaying/format/) for different ways of formatting the date output
-
 
 
 ### License
