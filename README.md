@@ -9,6 +9,7 @@
 
 ### API
 
+use as a module..
 ```javascript
 var fridays = require('moment-fridays')
 
@@ -23,12 +24,23 @@ var fridays = require('moment-fridays')
 // fridays(Date.now(), opts || {}, cb)	
 
 var opts = { format: 'dddd Do MMM YYYY' }
-fridays('Dec 25, 2010', opts, function(err, data) {
+fridays('2010-12-25', opts, function(err, data) {
   if (err) throw err
-  console.dir(data)		// data is an array
+  data.pipe(process.stdout)	// streaming data
 })
 ```
 
+or from the command line..
+```javascript
+node index.js --format='dddd Do, MMM YYYY' -l5 '2008-02-29'
+
+//output is:
+Friday 29th, Feb 2008
+Friday 22nd, Feb 2008
+Friday 15th, Feb 2008
+Friday 8th, Feb 2008
+Friday 1st, Feb 2008
+```
 
 
 ### Documentation

@@ -1,54 +1,87 @@
 var Moment = require('moment')
+  , Readable = require('stream').Readable
+  , rs = Readable()
 
-module.exports = function(date, opts, cb) {
+var main = module.exports = function(date, opts, cb) {
 
-  var fridays = []
-    , _moment = null
-    , _is_now = false
+  var _date
 
-  // create a moment object
-  if (date) {
-    _moment = Moment(date)
-    if (! _moment.isValid())
-      return cb(new Error('first parameter is not recognized as a valid date'))
-  }
-  else {
-    _moment = Moment()
-    _is_now = true
-  }
-
-  // input validation
+  if (! date) date = Date.now()
   if (typeof opts === 'function') {
     cb = opts
     opts = null
   }
-  if (!opts) opts = {}
+  if (! opts) opts = {}
 
-  // validate optional settings
-  opts.format = opts.format || 'YYYY-MM-DD'
-  if (_moment.format(opts.format) === 'Invalid date')
-    return cb(new Error('unrecognized format: '+ opts.format.toString()))
+  var flowing = ! opts.limit
+    , limit = parseInt(opts.limit, 10) || 1
+    , hardLimit = Moment('1888-06-01')
 
-  // define a range of dates
-  var start = _moment.clone().startOf('month')
-    , end = _is_now ? _moment : _moment.clone().endOf('month')
-
-  // locate 1st friday
-  if (start.day() > 5) { start.add(7, 'days') }
-  start.day(5)
-
-  while(start < end) {
-    fridays.push(start.format(opts.format))
-    start.add(7, 'days')
+  try {
+    _date = Moment(date)
+    if (! _date.isValid())
+      throw new Error('Invalid date')
+  }
+  catch(e) {
+    _date = Moment()
   }
 
-  // handle the case when no output exists
-  if (fridays.length < 1)
-    return cb(new Error('nothing found for ' +
-      _moment.format(opts.format) +
-      ', please try a different input date'))
+  if (_date.day() < 5)
+    _date.subtract(7, 'days')
 
-  // deliver the result
-  cb(null, fridays)
+  _date.day(5)
+
+  var format = opts.format || 'YYYY-MM-DD'
+  if (_date.format(format) === 'Invalid date')
+    throw new Error('unrecognized format: '+ format)
+
+  rs._read = function() {
+    rs.push(_date.format(format) +'\n')
+    if (_date < hardLimit || ! flowing && limit-- < 0) process.exit()
+    _date.subtract(7, 'days')
+  }
+
+  cb(null, rs)
+}
+
+
+if (! module.parent) {
+  function usage() {
+    var usage = 'Usage: node index.js [DATE] [OPTIONS]'+
+      '\nDisplay a continuous stream of friday dates occuring before DATE.'+
+      '\nIf DATE is omitted the friday before the current date is used.'+
+      '\n'+
+      '\nOptions:'+
+      '\n  -l, --limit=     count of how many previous fridays to display'+
+      '\n      --format=    a string describing the output format of dates'+
+      '\n'+
+      '\n      --help       display this help and exit'+
+      '\n      --version    display version information and exit'+
+      '\n';
+
+    console.log(usage)
+    process.exit()
+  }
+
+  var argv = require('minimist')(process.argv.slice(2))
+    , opts = {}
+
+  if (argv.l) opts.limit = parseInt(argv.l, 10)
+  if (argv.limit) opts.limit = parseInt(argv.limit, 10)
+  if (argv.format) opts.format = argv.format
+  if (argv.help) usage()
+  if (argv.version) {
+    console.log(require("./package.json").version)
+    process.exit()
+  }
+
+  main(argv._[0], opts, function(err, data) {
+    if (err) console.error(err.message, err)
+
+    process.on('exit', function() { /*console.log('\n')*/ })
+    process.stdout.on('error', process.exit)
+
+    data.pipe(process.stdout)
+  })
 }
 

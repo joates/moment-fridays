@@ -1,6 +1,6 @@
 {
   "name": "moment-fridays",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Asynchronously calculates the _fridays_ of a given month (requires a full date e.g. 'Dec 25, 2010' or '2010-12-25'), when no date parameter is provided it returns only those fridays which have passed during the current month (no future dates)",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "url": "https://github.com/joates/moment-fridays/issues"
   },
   "dependencies": {
+    "minimist": "^1.1.0",
     "moment": "^2.8.1"
   },
   "devDependencies": {
