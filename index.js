@@ -14,7 +14,7 @@ var main = module.exports = function(date, opts, cb) {
   if (! opts) opts = {}
 
   var flowing = ! opts.limit
-    , limit = parseInt(opts.limit, 10) || 1
+    , limit = opts.limit || 2
     , hardLimit = Moment('1888-06-01')
 
   try {
@@ -37,7 +37,7 @@ var main = module.exports = function(date, opts, cb) {
 
   rs._read = function() {
     rs.push(_date.format(format) +'\n')
-    if (_date < hardLimit || ! flowing && limit-- < 0) process.exit()
+    if (_date < hardLimit || ! flowing && ! limit--) process.exit()
     _date.subtract(7, 'days')
   }
 
@@ -75,7 +75,7 @@ if (! module.parent) {
     , opts = {}
 
   if (argv.format) opts.format = argv.format
-  if (argv.limit) opts.limit = parseInt(argv.limit, 10)
+  if (argv.limit) opts.limit = argv.limit + 1
   if (argv.help) usage()
   if (argv.version) version()
 
