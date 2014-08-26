@@ -1,6 +1,12 @@
 ## moment-fridays
 ![moment-fridays-logo](https://raw.github.com/joates/moment-fridays/master/img/moment-fridays-logo.png)
 
+
+### FYI
+
+[flowing-moments](https://github.com/joates/flowing-moments) has the exact same functionality as this code, _plus_ additional configuration options (_i.e._ days other than fridays ;-)
+
+
 ### Installation
 
 `npm install moment-fridays`
@@ -51,6 +57,11 @@ node index.js |head -n4
 ### Documentation
 
 see the [Moment.js docs](http://momentjs.com/docs/#/displaying/format/) for different ways of formatting the date output
+
+
+### (_in_)accuracy
+
+There is an issue with accuracy when using ```date.subtract(n, 'days')```, which is discussed in this [issue](https://github.com/moment/moment/issues/961). A ```hardLimit``` has been implemented [here](https://github.com/joates/moment-fridays/blob/master/index.js#L40) to avoid dates earlier than _June 1888_, this is NOT the point at which the bug appears, it is just an arbitrary limit because for this use case i am not interested in dates older than this.
 
 
 ### License
