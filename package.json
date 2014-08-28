@@ -1,6 +1,6 @@
 {
   "name": "moment-fridays",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Asynchronously calculates the _fridays_ prior to a given date (any date that moment.js can recognize), or the current date when none is provided.",
   "main": "index.js",
   "scripts": {
