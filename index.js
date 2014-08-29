@@ -36,8 +36,8 @@ var main = module.exports = function(date, opts, cb) {
     cb(new Error('unrecognized format: '+ format))
 
   rs._read = function() {
+    if (_date < hardLimit || ! flowing && ! limit--) return rs.push(null)
     rs.push(_date.format(format) +'\n')
-    if (_date < hardLimit || ! flowing && ! limit--) process.exit()
     _date.subtract(7, 'days')
   }
 
@@ -75,7 +75,7 @@ if (! module.parent) {
     , opts = {}
 
   if (argv.format) opts.format = argv.format
-  if (argv.limit) opts.limit = argv.limit + 1
+  if (argv.limit) opts.limit = 0 + argv.limit
   if (argv.help) usage()
   if (argv.version) version()
 
